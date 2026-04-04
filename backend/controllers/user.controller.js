@@ -1,90 +1,72 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
+export const register = asyncHandler(async (req, res) => {
+    const { fullname, email, phoneNumber, password, role } = req.body;
 
-export const register = async(req , res)=>{
-    try {
-        const {fullname ,email,phoneNumber , password , role} = req.body;
-        if(!fullname || !email || !phoneNumber || !password || !role){
-            return res.status(400).json(
-                {
-                    message:"something is missing",
-                    success:false
-                }
-            )
-        }
-
-        const user = await User.findOne({email})
-        if(user){
-            return res.status(400).json({
-                message:"user already exists",
-                success:false
-            })
-        }
-
-        const hashPassword = await bcrypt.hash(password , 10)
-
-        await User.create({
-            fullname,
-            email,
-            phoneNumber,
-            password:hashPassword,
-            role,
-        })
-
-        return res.status(201).json({
-            message:"account created successfully",
-            success:true,
-        })
-    } catch (error) {
-        console.log(error)
+    if (!fullname || !email || !phoneNumber || !password || !role) {
+       throw new ApiError(400, "All fields are required");
     }
-}
 
+    const existedUser = await User.findOne({ email });
 
-export const login = async (req , res)=>{
-    try {
-        const {email , password , role} = req.body;
+    if (existedUser) {
+       throw new ApiError(409, "User with this email already exists");
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+        fullname,
+        email,
+        phoneNumber,
+        password: hashPassword,
+        role,
+    });
+    const createdUser = await User.findById(user._id).select("-password");
+
+    if (!createdUser) {
+        throw new ApiError(500, "Something went wrong while registering the user");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(201, createdUser, "User created successfully")
+    );
+});
+
+export const login = asyncHandler(async (req , res)=>{
+    const {email , password , role} = req.body;
     
         if(!email || !password || !role){
-            return res.status(400).json({
-                message:"all fields are required",
-                success:false
-            })
+            throw new ApiError(400,"all fields are required")
         }
         
         let user = await User.findOne({email})
         if(!user){
-            return res.status(400).json({
-                message:"user doesnt exist",
-                success:false
-            })
+            throw new ApiError(400, "user doesnt exist")
         }
 
         const isPasswordCorrect = await bcrypt.compare(password , user.password)
 
         if(!isPasswordCorrect){
-            return res.status(400).json({
-                message:"wrong password",
-                success:false
-            })
+            throw new ApiError(400,"wrong password")
         }
 
         //check role is correct or not 
 
         if(role !==user.role){
-            return res.status(400).json({
-                message:"account doesnt exist with current role",
-                success:false
-            })
+            throw new ApiError(400,"account doesnt exist with current role")
         }
 
         const tokenData={
             userId:user._id
         }
 
-        const token = await jwt.sign(tokenData ,process.env.SECRET_KEY ,{expiresIn:'1d'})
+        const token = jwt.sign(tokenData ,process.env.SECRET_KEY ,{expiresIn:'1d'})
 
         user = {
             _id:user._id,
@@ -96,74 +78,55 @@ export const login = async (req , res)=>{
         }
 
 
-        return res.status(200).cookies("token", token, {maxAge:1*24*60*60*1000 , httpsOnly:true , sameSite:'strict'}).json({//for security
+        return res.status(200).cookie("token", token, {maxAge:1*24*60*60*1000 , httpsOnly:true , sameSite:'strict'}).json({//for security
             message:`Welcome Back ${user.fullname}`,
             user,
             status:true
         })
 
-    } catch (error) {
-        console.log(error)
-    }
-
-}
+})
 
 
 
-export const logout = async(req  , res)=>{
+export const logout = asyncHandler( async(req  , res)=>{
      
-    try {
-        return res.status(200).cookie("token", "",{maxAge:0})
-        .json({
-            message:"logout successfully",
-           success:true 
-        })
-    } catch (error) {
-        console.log(error)
-
-    }
-}
+   return res.status(200).cookie("token", "",{maxAge:0})
+        .json(
+         new ApiResponse(200,{},"logout succesfully")
+        )
+})
 
 
-export const updateProfile = async(req , res)=>{
-    try {
-        const {fullname , email , phoneNumber , bio , skills} = req.body;
+export const updateProfile = asyncHandler(async(req , res)=>{
+ const {fullname , email , phoneNumber , bio , skills} = req.body;
         const file = req.file;
-        if(!fullname || !email || !phoneNumber || !bio || !skills){
-            return res.status(400).json(
-                {
-                    message:"something is missing",
-                    success:false
-                }
-            )
-        }
 
 
         //cloudinary aayega yaha par
 
-
-
-        const skillsArray = skills.split(",");
         const userId=req.id // middleware auth
 
         let user = await User.findById(userId)
 
         if(!user){
-            return res.status(400).json({
-                message:"user not found",
-                success:false
-            })
+            throw new ApiError(400,"user not found")
         }
 
 //updating data
-        user.fullname = fullname,
-        user.email = email,
-        user.phoneNumber=phoneNumber,
-        user.profile.bio=bio,
-        user.profile.skills=skillsArray
 
-
-
+if(fullname) user.fullname = fullname
+if(email) user.email = email
+if(phoneNumber) user.phoneNumber = phoneNumber
+if (!user.profile) user.profile = {}; 
+    
+    if (bio) user.profile.bio = bio;
+    
+    if (skills) {
+        // Convert "react, node, js" into ["react", "node", "js"]
+        const skillsArray = skills.split(",").map(skill => skill.trim());
+        user.profile.skills = skillsArray;
+    }
+        
         //resume yaha ayega
         await user.save();
 
@@ -176,14 +139,8 @@ export const updateProfile = async(req , res)=>{
             profile:user.profile
         }
 
-        return res.status(200).json({
-            message:"profile updated successfully",
-            user,
-            success:true
-        })
-
-    } catch (error) {
-        console.log(error)
-    }
-}
+        return res.status(200).json(
+            new ApiResponse(200,user,"profile updated successfully")
+        )
+})
 

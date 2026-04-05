@@ -17,6 +17,10 @@ const jobSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    experience:{
+        type:Number,
+        required:true
+    },
     location:{
         type:String,
         required:true
@@ -43,7 +47,6 @@ const jobSchema = new mongoose.Schema({
         {
         type:mongoose.Schema.Types.ObjectId,
         ref:"Application",
-        required:true
     },
     ]
 },{timestamps:true})

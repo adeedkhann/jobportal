@@ -19,11 +19,12 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser())
 
 
-const corsOptions ={
-    origin :"http//localhost:5173",
-    Credentials : true
-}
-
+const corsOptions = {
+    origin: 'http://localhost:5173', // Apna frontend URL check karo (Vite ka default yahi hai)
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // OPTIONS zaroori hai
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
 app.use(cors(corsOptions))
 
 const PORT = process.env.PORT || 3000;

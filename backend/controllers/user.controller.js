@@ -78,11 +78,9 @@ export const login = asyncHandler(async (req , res)=>{
         }
 
 
-        return res.status(200).cookie("token", token, {maxAge:1*24*60*60*1000 , httpsOnly:true , sameSite:'strict'}).json({//for security
-            message:`Welcome Back ${user.fullname}`,
-            user,
-            status:true
-        })
+        return res.status(200).cookie("token", token, {maxAge:1*24*60*60*1000 , httpOnly:true , sameSite:'lax'}).json(
+            new ApiResponse(200 , user , "logged in successfully")
+        )
 
 })
 
@@ -144,3 +142,14 @@ if (!user.profile) user.profile = {};
         )
 })
 
+export const getProfile=asyncHandler(async(req,res)=>{
+   const userId=req.id
+   const user = await User.findById(userId).select('-password')
+   if(!user){
+    throw new ApiError(404 , "user not found log in again.")
+   }
+
+   return res.status(200).json(
+    new ApiResponse(200,user,"user fetched successfully")
+   )
+})

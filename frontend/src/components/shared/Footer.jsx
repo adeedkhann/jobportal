@@ -10,7 +10,7 @@ const Footer = () => {
           
           {/* Brand Column */}
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-blue-700">The Curated Career</h2>
+            <h2 className="text-2xl font-bold text-blue-700">TalentLoop</h2>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
               Redefining the job search for the modern era. Quality first, always.
             </p>
@@ -59,7 +59,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-gray-400 text-xs text-center md:text-left">
-            © 2024 The Curated Career. All rights reserved.
+            © 2026 TalentLoop. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-gray-400">
             <a href="#" className="hover:underline">Privacy</a>

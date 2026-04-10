@@ -56,7 +56,6 @@ const AuthPage = () => {
         dispatch(setUser(res.data.data));
         console.log(res.data.data)
         toast.success('Logged in Successfully')
-        dispatch(setUser(res.data.data));
         navigate("/")
       }else{
         toast.success("Registered Successfully")

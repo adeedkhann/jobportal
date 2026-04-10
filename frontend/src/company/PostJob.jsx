@@ -1,152 +1,194 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { Loader2, AlertCircle, Send } from 'lucide-react';
 
 const PostJob = () => {
-  const steps = [
-    { id: '01', title: 'Job Details', active: true },
-    { id: '02', title: 'Salary & Location', active: false },
-    { id: '03', title: 'Requirements', active: false },
-    { id: '04', title: 'Preview', active: false },
-  ];
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+  const [loading, setLoading] = useState(false);
+  
+  // 1. Dynamic Form State (Matches your Controller/Model)
+  const [input, setInput] = useState({
+    title: "",
+    description: "",
+    requirements: "", // Isse backend mein split(",") karenge
+    sallery: "",
+    location: "",
+    jobType: "Full-time",
+    position: 1,
+    experience: "",
+    companyId: "" // CheckCompany se set hoga
+  });
+
+  const changeEventHandler = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  // 2. Company Verification & setting companyId
+  useEffect(() => {
+    const checkCompany = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/v1/company/get", {
+          withCredentials: true
+        });
+        if (res.data.success && res.data.data.length > 0) {
+          setInput(prev => ({ ...prev, companyId: res.data.data[0]._id }));
+        } else {
+          toast.error("Please register your company first.");
+          navigate("/registercompany");
+        }
+      } catch (error) {
+        navigate("/auth");
+      } finally {
+        setChecking(false);
+      }
+    };
+    checkCompany();
+  }, [navigate]);
+
+  // 3. Submit Handler
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const res = await axios.post("http://localhost:8000/api/v1/job/post", input, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
+      });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate("/recruiterdashboard");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Internal server error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (checking) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-10 px-4 md:px-8 lg:px-16">
       <div className="max-w-6xl mx-auto">
-        
-        {/* Header Section */}
-        <div className="mb-10">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
-            Hire your next <span className="text-blue-600">visionary</span>
-          </h1>
-          <p className="text-gray-500 mt-2 max-w-lg text-sm md:text-base">
-            Create a compelling job listing that attracts top-tier talent from around the globe. Follow our curated 4-step process.
-          </p>
+        <div className="mb-10 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 italic">Post a <span className="text-blue-600 not-italic">New Job</span></h1>
+            <p className="text-gray-500 mt-2 text-sm">Fill in the details to find your next great hire.</p>
+          </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* Left Sidebar - Steps */}
-          <div className="w-full lg:w-1/4 space-y-6">
-            <div className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm space-y-2">
-              {steps.map((step) => (
-                <div 
-                  key={step.id} 
-                  className={`flex items-center gap-4 p-3 rounded-2xl transition-all ${
-                    step.active ? 'bg-blue-50 border border-blue-100' : 'opacity-50'
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
-                    step.active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500'
-                  }`}>
-                    {step.id}
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase leading-none mb-1">Step {step.id}</p>
-                    <p className={`text-sm font-bold ${step.active ? 'text-blue-700' : 'text-slate-900'}`}>{step.title}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Curator's Tip Card */}
-            <div className="bg-[#e0f7ff] rounded-3xl p-6 border border-blue-100">
-               <h4 className="text-blue-700 font-bold text-sm mb-2">Curator's Tip</h4>
-               <p className="text-blue-600/80 text-xs leading-relaxed">
-                 Job titles that include specific levels (e.g., 'Senior') receive 40% more qualified applicants.
-               </p>
-            </div>
-          </div>
-
-          {/* Right Main Form Section */}
-          <div className="flex-grow bg-white rounded-[2.5rem] p-6 md:p-10 border border-gray-100 shadow-sm">
+        <form onSubmit={submitHandler} className="flex flex-col lg:flex-row gap-8">
+          {/* Form Fields */}
+          <div className="flex-grow bg-white rounded-[2.5rem] p-6 md:p-10 border border-gray-100 shadow-sm space-y-6">
             
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-xl font-bold text-slate-900">Step 1: Job Details</h2>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Progress 25%</span>
+            {/* Row 1: Title */}
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Professional Job Title</label>
+              <input 
+                type="text" name="title" value={input.title} onChange={changeEventHandler} required
+                placeholder="e.g. Senior Frontend Developer" 
+                className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
-            <form className="space-y-8">
-              {/* Job Title */}
+            {/* Row 2: Type, Experience, Position */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Professional Job Title</label>
-                <input 
-                  type="text" 
-                  placeholder="e.g. Senior Product Designer (UI/UX)" 
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500"
-                />
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Job Type</label>
+                <select name="jobType" value={input.jobType} onChange={changeEventHandler} className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Remote">Remote</option>
+                </select>
               </div>
-
-              {/* Type and Experience Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Employment Type</label>
-                  <select className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500 appearance-none">
-                    <option>Full-time</option>
-                    <option>Contract</option>
-                    <option>Freelance</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Experience Level</label>
-                  <select className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500 appearance-none">
-                    <option>Entry Level (0-2 years)</option>
-                    <option>Mid-Senior (3-5 years)</option>
-                    <option>Director / Lead</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Job Description (Simple Editor Mockup) */}
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Job Description</label>
-                <div className="border border-gray-100 rounded-[2rem] overflow-hidden shadow-sm">
-                  <div className="bg-gray-50 p-3 border-b border-gray-100 flex gap-4">
-                     {['B', 'I', '≡', '🔗'].map((tool, i) => (
-                       <button key={i} type="button" className="text-gray-400 hover:text-slate-900 font-bold px-2">{tool}</button>
-                     ))}
-                  </div>
-                  <textarea 
-                    rows="8" 
-                    placeholder="Outline the role, responsibilities, and what makes your company unique..."
-                    className="w-full p-6 text-sm border-none focus:ring-0 resize-none bg-white"
-                  ></textarea>
-                </div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Exp (in years)</label>
+                <input type="number" name="experience" value={input.experience} onChange={changeEventHandler} required className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm"/>
               </div>
-
-              {/* Target Skills / Tags */}
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Target Skills (Tags)</label>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {['FIGMA', 'UI DESIGN', 'PROTOTYPING'].map(tag => (
-                    <span key={tag} className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold flex items-center gap-2">
-                      {tag} <span className="opacity-50 cursor-pointer">✕</span>
-                    </span>
-                  ))}
-                </div>
-                <input 
-                  type="text" 
-                  placeholder="Add a skill and press enter..." 
-                  className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500"
-                />
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">No. of Positions</label>
+                <input type="number" name="position" value={input.position} onChange={changeEventHandler} required className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm"/>
               </div>
-            </form>
+            </div>
+
+            {/* Row 3: Salary & Location */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Salary (LPA)</label>
+                <input type="number" name="sallery" value={input.sallery} onChange={changeEventHandler} required placeholder="e.g. 12" className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm"/>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Location</label>
+                <input type="text" name="location" value={input.location} onChange={changeEventHandler} required placeholder="e.g. Bangalore, India" className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm"/>
+              </div>
+            </div>
+
+            {/* Row 4: Requirements */}
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Requirements (Comma Separated)</label>
+              <input 
+                type="text" name="requirements" value={input.requirements} onChange={changeEventHandler} required
+                placeholder="React, Node.js, MongoDB, Tailwind..." 
+                className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-sm focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Row 5: Description */}
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Description</label>
+              <textarea 
+                name="description" value={input.description} onChange={changeEventHandler} required
+                rows="6" placeholder="Describe the role and responsibilities..."
+                className="w-full p-6 text-sm bg-gray-50 border-none rounded-[2rem] focus:ring-2 focus:ring-blue-500"
+              ></textarea>
+            </div>
+
+            <div className="pt-6 flex gap-4">
+               <button 
+                 type="button" onClick={() => navigate(-1)}
+                 className="flex-1 py-4 border border-gray-100 rounded-2xl text-sm font-bold text-slate-400 hover:bg-gray-50 transition-all"
+               >
+                 Cancel
+               </button>
+               <button 
+                 type="submit" disabled={loading}
+                 className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 flex items-center justify-center gap-2 transition-all"
+               >
+                 {loading ? <Loader2 className="animate-spin" /> : <><Send size={18}/> Publish Job</>}
+               </button>
+            </div>
           </div>
-        </div>
 
-        {/* Footer Actions */}
-        <div className="mt-10 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-6">
-          <button className="text-gray-400 font-bold text-sm flex items-center gap-2 hover:text-slate-900">
-            ← Back to Dashboard
-          </button>
-          <div className="flex gap-4 w-full md:w-auto">
-             <button className="flex-1 md:flex-none px-10 py-4 bg-gray-100 text-slate-700 font-bold rounded-2xl hover:bg-gray-200 transition-all text-sm">
-                Save Draft
-             </button>
-             <button className="flex-1 md:flex-none px-10 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 text-sm">
-                Continue to Step 2
-             </button>
+          {/* Right Info Sidebar */}
+          <div className="w-full lg:w-1/3 space-y-6">
+             <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
+                <h4 className="font-bold text-lg mb-4">Job Preview Card</h4>
+                <div className="bg-white/10 p-5 rounded-2xl border border-white/10">
+                   <p className="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Preview</p>
+                   <h5 className="text-lg font-bold mt-1">{input.title || "Job Title"}</h5>
+                   <p className="text-sm opacity-60 mt-1">{input.location || "Location"}</p>
+                   <div className="mt-4 flex gap-2">
+                      <span className="px-3 py-1 bg-blue-600 text-[9px] font-bold rounded-full">{input.jobType}</span>
+                      <span className="px-3 py-1 bg-white/10 text-[9px] font-bold rounded-full">{input.experience} Yrs</span>
+                   </div>
+                </div>
+             </div>
+             
+             <div className="bg-blue-50 rounded-[2rem] p-8 border border-blue-100">
+                <div className="flex items-center gap-2 text-blue-700 mb-4">
+                  <AlertCircle size={20}/>
+                  <h4 className="font-bold">Important Notice</h4>
+                </div>
+                <p className="text-xs text-blue-800/70 leading-relaxed">
+                   Once published, this job will be visible to all active candidates. Make sure the salary and requirements are accurate.
+                </p>
+             </div>
           </div>
-        </div>
-
+        </form>
       </div>
     </div>
   );

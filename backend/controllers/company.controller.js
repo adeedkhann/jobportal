@@ -3,7 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import {Company} from "../models/company.model.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {User} from "../models/user.model.js"
-
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
 
@@ -12,16 +12,21 @@ import {User} from "../models/user.model.js"
 export const registerCompany = asyncHandler(async(req,res)=>{
 
 
-    const {companyName}=req.body
-
-    if(!companyName){
+    const {name}=req.body
+    const userId = req.id;
+    if(!name){
         throw new ApiError(400,"company name is required")
     }
 
-    let company = await Company.findOne({companyName})
+    let company = await Company.findOne({name})
     
     if(company){
         throw new ApiError(400,"company already exist")
+    }
+
+    const existingUserCompany = await Company.findOne({ userId });
+    if (existingUserCompany) {
+        throw new ApiError(400, "You have already registered a company. One user can only own one company.");
     }
 
     const user = await User.findById(req.id);
@@ -30,7 +35,7 @@ export const registerCompany = asyncHandler(async(req,res)=>{
     }
 
     company = await Company.create({
-        name:companyName,
+        name:name,
         userId:req.id
     })
     
@@ -75,9 +80,15 @@ export const getCompanyById= asyncHandler(async(req,res)=>{
 
 export const updateCompany = asyncHandler(async(req,res)=>{
     const {name , description , website , location}  = req.body
-    const updateData = {name , description , website , location}
+   
     const file = req.file
-    //cloudinary
+    const companylogo = await uploadOnCloudinary(file);
+    if(!companylogo){
+        throw new ApiError(400,"cannt upload logo on the cloudinary")
+    }
+    const logo = companylogo.secure_url;
+
+    const updateData = {name , description , website , location , logo}
     const companyId = req.params.id;
 
     const company = await Company.findByIdAndUpdate(companyId , updateData , {new:true})

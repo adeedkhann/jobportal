@@ -1,17 +1,21 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const ProtectedRoute = ({ children, allowedRole }) => {
-    const { user } = useSelector((store) => store.auth);
 
+const ProtectedRoute = ({ children, allowedRole }) => {
+
+    const navigate = useNavigate()
+
+    const { user ,loading} = useSelector((store) => store.auth);
+    if (loading) return null;
     if (!user) {
-        toast.error("your role doesnt allow that action")
-        return <Navigate to="/auth" />;
+        toast.error("authentication error")
+        return navigate("/auth")
     }
     if (user.role !== allowedRole) {
         toast.error("your role doesnt allow that action")
-        return <Navigate to="/" />;
+        return navigate("/")
     }
 
     return children;

@@ -64,63 +64,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Search Bar / Filter Area */}
-      <div className="max-w-7xl mx-auto px-6 pb-16 md:pb-24">
-        <div className="bg-gray-50 p-6 md:p-8 rounded-3xl border border-gray-100 shadow-lg">
-          <form className="grid md:grid-cols-4 gap-6 items-center">
-            
-            {/* Job Title Input */}
-            <div className="relative">
-              <label htmlFor="jobTitle" className="sr-only">Job title or keyword</label>
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              </div>
-              <input
-                type="text"
-                id="jobTitle"
-                placeholder="Job title or keyword"
-                className="block w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Location Input */}
-            <div className="relative">
-              <label htmlFor="location" className="sr-only">Location</label>
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              </div>
-              <input
-                type="text"
-                id="location"
-                placeholder="Location"
-                className="block w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Experience Level Dropdown */}
-            <div className="relative">
-                <label htmlFor="experience" className="sr-only">Experience Level</label>
-                <select id="experience" className="block w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-600 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
-                  <option>Experience Level</option>
-                  <option>Entry Level</option>
-                  <option>Mid Level</option>
-                  <option>Senior Level</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
-
-            {/* Search Button */}
-            <button
-              type="submit"
-              className="w-full inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-xl shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Search Jobs
-            </button>
-          </form>
-        </div>
-      </div>
+      
     </section>
   );
 };

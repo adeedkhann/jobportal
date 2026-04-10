@@ -1,108 +1,153 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import UpdateProfileDialog from '@/components/ui/UpdateProfileDialog';
+import { setUser } from '@/store/authSlice';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react'; // Added Loader2 icon
+
 const StudentProfile = () => {
-const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const [profile, setProfile] = useState(user || {});
+  const [uploading, setUploading] = useState(false); // New state for loading
+  const fileInputRef = useRef(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // If user was updated in Redux, update local state
     if (user) setProfile(user);
   }, [user]);
 
+  // --- Resume Upload Logic (Same to Same) ---
+  const resumeHandler = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    if (file.type !== "application/pdf") {
+      return toast.error("Please upload a PDF file only");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setUploading(true);
+      toast.loading("Uploading resume...", { id: 'upload-toast' });
+      const res = await axios.post("http://localhost:8000/api/v1/user/profile/update/resume", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true
+      });
+
+      if (res.data.success) {
+        dispatch(setUser(res.data.data));
+        toast.success("Resume updated successfully!", { id: 'upload-toast' });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Upload failed", { id: 'upload-toast' });
+    } finally {
+      setUploading(false);
+      toast.dismiss('upload-toast');
+    }
+  };
 
   return (
     <div className="bg-[#f8faff] min-h-screen py-10 px-4 md:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* --- HEADER SECTION --- */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden relative">
-          <div className="h-32 md:h-48 bg-gradient-to-r from-slate-800 to-slate-900" />
-          
-          <div className="p-6 md:p-10 -mt-12 md:-mt-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
-            <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
+        {/* --- REFINED CLEAN HEADER SECTION --- */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden relative p-8">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
               <div className="relative">
+                {/* Bigger & Circle Profile Pic */}
                 <img 
-                    src={profile.avatar} 
-                    alt={profile.fullname} 
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-3xl border-4 border-white shadow-xl object-cover"
+                  src={profile?.profile?.profilePhoto || "https://github.com/shadcn.png"} 
+                  alt={profile.fullname} 
+                  className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl object-cover ring-4 ring-slate-100"
                 />
-                <div className="absolute -bottom-1 -right-1 bg-blue-600 rounded-full p-2 border-4 border-white text-white">
-                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
               </div>
               <div className="md:mb-2">
-                <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 leading-tight">{profile.fullname}</h1>
-                <p className="text-sm md:text-base text-blue-600 font-semibold mt-1">{profile.email}</p>
+                <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight">{profile.fullname}</h1>
+                <p className="text-sm md:text-base text-blue-600 font-semibold mt-1.5">{profile.email}</p>
               </div>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <button onClick={() => setOpen(true)} className="flex-1 md:flex-none px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-slate-700 font-bold rounded-xl transition-colors text-sm">
-                 Edit Profile
-              </button>
-              <button className="p-2.5 bg-gray-100 rounded-xl text-slate-500 hover:text-slate-900">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                Edit Profile
               </button>
             </div>
           </div>
         </div>
 
-        {/* --- ABOUT SECTION --- */}
+        {/* --- ABOUT SECTION (Same to Same) --- */}
         <div className="bg-white rounded-3xl p-6 md:p-10 border border-gray-100 shadow-sm">
            <h2 className="text-xl font-bold text-slate-900 mb-4">About me</h2>
            <p className="text-gray-500 text-sm md:text-base leading-relaxed">
-              {profile?.profile?.bio}
+              {profile?.profile?.bio || "No bio added yet"} 
            </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
+          {/* Resume Section (Same to Same Layout) */}
           <div className="bg-blue-50 rounded-3xl p-6 md:p-8 border border-blue-100 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-slate-900">Resume / CV</h2>
-                <button className="text-blue-600 hover:text-blue-800">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                </button>
               </div>
 
               <div className="bg-white p-4 rounded-2xl flex items-center gap-4 mb-6 shadow-sm border border-blue-100">
                 <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-500 font-bold text-xs">PDF</div>
                 <div className="flex-grow overflow-hidden">
-                   <p className="text-sm font-bold text-slate-900 truncate">{profile.resumeName}</p>
-                   <p className="text-[10px] text-gray-400 font-medium uppercase mt-0.5">{profile.uploadDate}</p>
+                   {profile?.profile?.resume ? (
+                     <a href={profile.profile.resume} target='_blank' rel='noopener noreferrer' className="text-sm font-bold text-blue-600 truncate hover:underline">
+                        {profile.profile.resumeOriginalName || "View Resume"}
+                     </a>
+                   ) : (
+                     <p className="text-sm font-bold text-slate-400">Not uploaded</p>
+                   )}
                 </div>
               </div>
             </div>
 
-            <button className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-200">
-               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-               Update Resume
+            <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="application/pdf" 
+                onChange={resumeHandler} 
+            />
+
+            <button 
+              onClick={() => fileInputRef.current.click()}
+              disabled={uploading}
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-200"
+            >
+               {uploading ? (
+                 <Loader2 className="w-5 h-5 animate-spin" />
+               ) : (
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+               )}
+               {uploading ? "Uploading..." : "Update Resume"}
             </button>
           </div>
 
-          {/* Skills Section */}
+          {/* Skills Section (Same to Same) */}
           <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
-             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-slate-900">Core skills</h2>
-                <button className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-                </button>
-             </div>
+             <h2 className="text-xl font-bold text-slate-900 mb-6">Core skills</h2>
              <div className="flex flex-wrap gap-2">
-               {profile?.profile?.skills?.map(skill => (
-                <span key={skill} className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors cursor-default">
-                    {skill}
-                </span>
-               ))}
+               {profile?.profile?.skills?.length > 0 ? (
+                 profile.profile.skills.map(skill => (
+                   <span key={skill} className="px-4 py-2 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                     {skill}
+                   </span>
+                 ))
+               ) : (
+                 <p className="text-gray-400 text-sm">No skills added</p>
+               )}
              </div>
           </div>
-
         </div>
-               <UpdateProfileDialog open={open} setOpen={setOpen}/>
+        <UpdateProfileDialog open={open} setOpen={setOpen}/>
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, Settings } from "lucide-react";
-import { useNavigate, Link } from 'react-router-dom';
+import { Menu, X, User, LogOut, Settings, LayoutDashboard } from "lucide-react";
+import { useNavigate, Link, NavLink } from 'react-router-dom'; // NavLink add kiya
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser } from '@/store/authSlice'; // Import your setUser action
+import { setUser } from '@/store/authSlice';
+import axios from 'axios';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +16,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
-  const [activeLink, setActiveLink] = useState("Home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Get user from Redux
   const { user } = useSelector((store) => store.auth);
 
   const navLinks = [
@@ -28,45 +27,62 @@ const Navbar = () => {
     { name: "Companies", href: "/companies" },
     { name: "Blog", href: "/blog" },
   ];
+const handleLogout = async () => {
+    try {
+        const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+            withCredentials: true // <--- Yeh sabse zaroori hai cookies clear karne ke liye
+        });
 
-  const handleLogout = () => {
-    dispatch(setUser(null));
-    navigate("/auth");
-  };
+        if (res.data.success) {
+            dispatch(setUser(null));
+            navigate("/auth"); // Redirect karein
+            toast.success(res.data.message || "Logged out successfully");
+        }
+    } catch (error) {
+        console.log("Logout Error:", error);
+        toast.error("Failed to logout. Please try again.");
+        
+        // Error ke case mein bhi local state clear karna safe rehta hai
+        dispatch(setUser(null));
+        navigate("/auth");
+    }
+};
 
   return (
     <nav className="w-full border-b border-slate-100 bg-white px-6 py-4 relative">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
-        {/* Logo and Links */}
         <div className="flex items-center gap-12">
           <Link to="/" className="text-[#002B7F] font-bold text-xl tracking-tight">
             TalentLoop
           </Link>
 
+          {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => {
-              const isActive = activeLink === link.name;
-              return (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  onClick={() => setActiveLink(link.name)}
-                  className={`relative text-sm font-medium transition-all duration-200 pb-1 ${
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.name}
+                to={link.href}
+                className={({ isActive }) => 
+                  `relative text-sm font-medium transition-all duration-200 pb-1 ${
                     isActive ? "text-[#0052CC]" : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  {link.name}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0052CC]" />
-                  )}
-                </Link>
-              );
-            })}
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {link.name}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#0052CC]" />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            ))}
           </div>
         </div>
 
-        {/* Right Side: Auth or Profile */}
+        {/* Right Side Logic (Same as before) */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-4">
             {!user ? (
@@ -80,7 +96,6 @@ const Navbar = () => {
               </>
             ) : (
               <div className="flex items-center gap-4">
-                {/* RBAC: Only show Post a Job to Recruiters */}
                 {user.role === 'recruiter' && (
                   <Button 
                     onClick={() => navigate("/postjob")}
@@ -116,17 +131,25 @@ const Navbar = () => {
                     <DropdownMenuSeparator className="bg-slate-100" />
 
                     <div className="mt-1">
+                      {/* Active State for Dropdown Profile Link */}
                       <DropdownMenuItem 
-                        onClick={() => navigate(user.role === 'recruiter' ? "/admin/profile" : "/seekerprofile")} 
-                        className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                        onClick={() => navigate(user.role === 'recruiter' ? "/recruiterprofile" : "/seekerprofile")} 
+                        className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
                       >
                         <User className="h-4 w-4 text-slate-500" />
                         <span className="text-sm font-medium text-slate-700">My Profile</span>
                       </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => navigate(user.role === 'recruiter' ? "/recruiterdashboard" : "/studentdashboard")} 
+                        className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
+                      >
+                        <LayoutDashboard className="h-4 w-4 text-slate-500" />
+                        <span className="text-sm font-medium text-slate-700">Dashboard</span>
+                      </DropdownMenuItem>
 
                       <DropdownMenuItem 
                         onClick={() => navigate("/settings")} 
-                        className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+                        className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
                       >
                         <Settings className="h-4 w-4 text-slate-500" />
                         <span className="text-sm font-medium text-slate-700">Settings</span>
@@ -148,7 +171,6 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
           <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-600 p-2">
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -157,23 +179,20 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Content (RBAC included here too) */}
+      {/* Mobile Menu Content */}
       {isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-b border-slate-100 flex flex-col p-6 gap-4 md:hidden z-50 shadow-lg">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.name}
               to={link.href}
-              onClick={() => {
-                setActiveLink(link.name);
-                setIsMenuOpen(false);
-              }}
-              className={`text-left text-lg font-medium ${
-                activeLink === link.name ? "text-[#0052CC]" : "text-slate-500"
-              }`}
+              onClick={() => setIsMenuOpen(false)}
+              className={({ isActive }) => 
+                `text-left text-lg font-medium ${isActive ? "text-[#0052CC]" : "text-slate-500"}`
+              }
             >
               {link.name}
-            </Link>
+            </NavLink>
           ))}
           <hr className="border-slate-100" />
           {!user ? (
@@ -183,7 +202,13 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              <Link to={user.role === 'recruiter' ? "/admin/profile" : "/seekerprofile"} className="text-lg font-medium text-slate-600">Profile</Link>
+              <NavLink 
+                to={user.role === 'recruiter' ? "/recruiterprofile" : "/seekerprofile"} 
+                className={({ isActive }) => `text-lg font-medium ${isActive ? "text-[#0052CC]" : "text-slate-600"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Profile
+              </NavLink>
               {user.role === 'recruiter' && <Button onClick={() => navigate("/postjob")} className="bg-[#0052CC] w-full text-white">Post a Job</Button>}
               <button onClick={handleLogout} className="text-left text-lg font-medium text-red-500">Logout</button>
             </div>

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const register = asyncHandler(async (req, res) => {
     const { fullname, email, phoneNumber, password, role } = req.body;
@@ -98,13 +99,17 @@ export const logout = asyncHandler( async(req  , res)=>{
 export const updateProfile = asyncHandler(async(req , res)=>{
  const {fullname , email , phoneNumber , bio , skills} = req.body;
         const file = req.file;
+        
 
 
         //cloudinary aayega yaha par
 
         const userId=req.id // middleware auth
-
+        let avatar;
         let user = await User.findById(userId)
+        if(file){
+            avatar = await uploadOnCloudinary(file);
+        }
 
         if(!user){
             throw new ApiError(400,"user not found")
@@ -114,6 +119,7 @@ export const updateProfile = asyncHandler(async(req , res)=>{
 
 if(fullname) user.fullname = fullname
 if(email) user.email = email
+if(file) user.profile.profilePhoto = avatar.url
 if(phoneNumber) user.phoneNumber = phoneNumber
 if (!user.profile) user.profile = {}; 
     
@@ -141,6 +147,36 @@ if (!user.profile) user.profile = {};
             new ApiResponse(200,user,"profile updated successfully")
         )
 })
+
+export const updateResume = asyncHandler(async(req,res)=>{
+    const userId = req.id;
+    const resume = req.file;
+
+    if(!resume){
+        throw new ApiError(404,"Resume file is required")
+    }
+
+    const resumeUrl = await uploadOnCloudinary(resume)
+    if(!resumeUrl){
+        throw new ApiError(404,"failed to upload on the cloudinary")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        {
+            $set: {
+                "profile.resume": resumeUrl.secure_url,
+                "profile.resumeOriginalName": resume.originalname // Option: Original name save karna helpful hota hai
+            }
+        },
+        { new: true } // Taaki update hone ke baad naya data return ho
+    ).select("-password")
+
+    return res.status(200).json(
+        new ApiResponse(200,user,"resume uploaded successfully")
+    )
+})
+
 
 export const getProfile=asyncHandler(async(req,res)=>{
    const userId=req.id

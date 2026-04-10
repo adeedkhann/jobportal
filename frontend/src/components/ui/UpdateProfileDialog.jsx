@@ -38,7 +38,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     setInput({ ...input, file });
   };
 
-const submitHandler = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("fullname", input.fullname);
@@ -46,32 +46,35 @@ const submitHandler = async (e) => {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("bio", input.bio);
     formData.append("skills", input.skills);
+    
+    // Backend req.file dhoond raha hai, isliye key "file" hi rakhein
     if (input.file) {
-        formData.append("file", input.file);
+      formData.append("file", input.file);
     }
 
     setLoading(true);
     try {
-        const res = await axios.post('http://localhost:8000/api/v1/user/updateprofile', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            withCredentials: true
-        });
-        if (res.data.success) {
-            dispatch(setUser(res.data.data));
-            toast.success(res.data.message);
-            setOpen(false);
-        }
+      const res = await axios.post('http://localhost:8000/api/v1/user/profile/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true
+      });
+      if (res.data.success) {
+        dispatch(setUser(res.data.data)); // Backend se updated user data
+        toast.success(res.data.message);
+        setOpen(false);
+      }
     } catch (error) {
-        toast.error(error.response?.data?.message || "Error updating profile");
+      toast.error(error.response?.data?.message || "Error updating profile");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-}
+  }
 
   return (
-    <Dialog open={open}>
+    // onOpenChange={setOpen} likhne se cross button aur ESC key kaam karne lagenge
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className="sm:max-w-[425px]"
         onInteractOutside={() => setOpen(false)}
@@ -91,14 +94,17 @@ const submitHandler = async (e) => {
                 className="col-span-3"
               />
             </div>
-            <Input
-  id="phoneNumber"
-  name="phoneNumber"
-  type="number"
-  value={input.phoneNumber}
-  onChange={changeEventHandler}
-  className="col-span-3"
-/>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phoneNumber">Number</Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="text"
+                value={input.phoneNumber}
+                onChange={changeEventHandler}
+                className="col-span-3"
+              />
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="bio">Bio</Label>
               <Input
@@ -121,23 +127,12 @@ const submitHandler = async (e) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="file">ProfilePic</Label>
+              <Label htmlFor="file">Profile Pic</Label>
               <Input
                 id="file"
                 name="file"
                 type="file"
-                accept="application/pdf"
-                onChange={fileEventHandler}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="file">Resume</Label>
-              <Input
-                id="file"
-                name="file"
-                type="file"
-                accept="application/pdf"
+                accept="image/*"
                 onChange={fileEventHandler}
                 className="col-span-3"
               />
@@ -145,7 +140,7 @@ const submitHandler = async (e) => {
           </div>
           <DialogFooter>
             {loading ? (
-              <Button className="w-full">
+              <Button className="w-full" disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
               </Button>
             ) : (

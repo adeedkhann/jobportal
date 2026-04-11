@@ -34,7 +34,7 @@ const StudentDashboard = () => {
     const fetchAppliedJobs = async () => {
       try {
         setFetchingJobs(true);
-        const res = await axios.get("http://localhost:8000/api/v1/application/get", {
+        const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/application/get", {
           withCredentials: true
         });
         if (res.data.success) {
@@ -63,7 +63,7 @@ const StudentDashboard = () => {
     formData.append("file", file);
     try {
       setUploading(true);
-      const res = await axios.post("http://localhost:8000/api/v1/user/profile/update", formData, {
+      const res = await axios.post("https://jobportal-1-nhtb.onrender.com/api/v1/user/profile/update", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true
       });

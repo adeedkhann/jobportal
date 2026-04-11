@@ -120,7 +120,7 @@ function App() {
     const initAuth = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/v1/user/getprofile",
+          "https://jobportal-1-nhtb.onrender.com/api/v1/user/getprofile",
           {
             withCredentials: true,
           },

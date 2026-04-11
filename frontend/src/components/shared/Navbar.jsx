@@ -24,12 +24,11 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Find Jobs", href: "/jobs" },
-    { name: "Companies", href: "/companies" },
-    { name: "Blog", href: "/blog" },
+
   ];
 const handleLogout = async () => {
     try {
-        const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+        const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/user/logout", {
             withCredentials: true // <--- Yeh sabse zaroori hai cookies clear karne ke liye
         });
 

@@ -17,7 +17,7 @@ const RecruiterProfile = () => {
         const fetchCompany = async () => {
             try {
                 // Aapka 'getCompany' endpoint recruiter ki sari companies (jo ki ab ek hi hogi) return karta hai
-                const res = await axios.get("http://localhost:8000/api/v1/company/get", {
+                const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/company/get", {
                     withCredentials: true
                 });
                 if (res.data.success) {

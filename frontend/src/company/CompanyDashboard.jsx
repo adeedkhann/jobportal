@@ -22,12 +22,12 @@ const CompanyDashboard = () => {
       try {
         setLoading(true);
         // Fetch Jobs created by this admin
-        const jobsRes = await axios.get("http://localhost:8000/api/v1/job/getadminjobs", {
+        const jobsRes = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/job/getadminjobs", {
           withCredentials: true
         });
         
         // Fetch Company details
-        const companyRes = await axios.get("http://localhost:8000/api/v1/company/get", {
+        const companyRes = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/company/get", {
           withCredentials: true
         });
 

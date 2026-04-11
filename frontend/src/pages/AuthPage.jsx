@@ -35,8 +35,8 @@ const AuthPage = () => {
     e.preventDefault();
 
     const apiToFetch = isLogin
-      ? "http://localhost:8000/api/v1/user/login"
-      : "http://localhost:8000/api/v1/user/register";
+      ? "https://jobportal-1-nhtb.onrender.com/api/v1/user/login"
+      : "https://jobportal-1-nhtb.onrender.com/api/v1/user/register";
 
     try {
       dispatch(setLoading(true))

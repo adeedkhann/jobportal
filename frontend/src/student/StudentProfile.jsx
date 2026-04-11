@@ -33,7 +33,7 @@ const StudentProfile = () => {
     try {
       setUploading(true);
       toast.loading("Uploading resume...", { id: 'upload-toast' });
-      const res = await axios.post("http://localhost:8000/api/v1/user/profile/update/resume", formData, {
+      const res = await axios.post("https://jobportal-1-nhtb.onrender.com/api/v1/user/profile/update/resume", formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true
       });

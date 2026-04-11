@@ -12,7 +12,7 @@ const FeaturedOpportunities = () => {
         const fetchFeaturedJobs = async () => {
             try {
                 // Latest jobs fetch kar rahe hain
-                const res = await axios.get("http://localhost:8000/api/v1/job/get", {
+                const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/job/get", {
                     withCredentials: true
                 });
                 if (res.data.success) {

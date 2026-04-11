@@ -26,7 +26,7 @@ const JobDetails = () => {
             try {
                 // Backend controller check karein: router.route("/get/:id").get(isAuthenticated, getJobById);
                 // Is getJobById controller mein `.populate("company")` zaroori hai.
-                const res = await axios.get(`http://localhost:8000/api/v1/job/get/${jobId}`, {
+                const res = await axios.get(`https://jobportal-1-nhtb.onrender.com/api/v1/job/get/${jobId}`, {
                     withCredentials: true
                 });
                 if (res.data.success) {
@@ -47,7 +47,7 @@ const JobDetails = () => {
     const applyJobHandler = async () => {
         try {
             setApplying(true);
-            const res = await axios.get(`http://localhost:8000/api/v1/application/apply/${jobId}`, {
+            const res = await axios.get(`https://jobportal-1-nhtb.onrender.com/api/v1/application/apply/${jobId}`, {
                 withCredentials: true
             });
             if (res.data.success) {

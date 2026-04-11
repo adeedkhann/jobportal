@@ -15,7 +15,7 @@ const JobSearchSection = () => {
         try {
             setLoading(true);
             // Query parameter 'keyword' bhej rahe hain jaisa aapke backend mein hai
-            const res = await axios.get(`http://localhost:8000/api/v1/job/get?keyword=${keyword}`, {
+            const res = await axios.get(`https://jobportal-1-nhtb.onrender.com/api/v1/job/get?keyword=${keyword}`, {
                 withCredentials: true
             });
             if (res.data.success) {

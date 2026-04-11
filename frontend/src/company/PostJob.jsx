@@ -30,7 +30,7 @@ const PostJob = () => {
   useEffect(() => {
     const checkCompany = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/v1/company/get", {
+        const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/company/get", {
           withCredentials: true
         });
         if (res.data.success && res.data.data.length > 0) {
@@ -53,7 +53,7 @@ const PostJob = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:8000/api/v1/job/post", input, {
+      const res = await axios.post("https://jobportal-1-nhtb.onrender.com/api/v1/job/post", input, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true
       });

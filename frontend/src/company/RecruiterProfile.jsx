@@ -1,37 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import UpdateProfileDialog from '@/components/ui/UpdateProfileDialog';
 import { Building2, Mail, MapPin, Briefcase, Users, Plus, Link as LinkIcon, Loader2 } from 'lucide-react';
 import axios from 'axios';
-import { toast } from 'sonner';
 
 const RecruiterProfile = () => {
     const [open, setOpen] = useState(false);
     const { user } = useSelector((store) => store.auth);
     const [company, setCompany] = useState(null);
+    const [adminJobs, setAdminJobs] = useState([]); // Dynamic Jobs ke liye state
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchCompany = async () => {
+        const fetchProfileData = async () => {
             try {
-                // Aapka 'getCompany' endpoint recruiter ki sari companies (jo ki ab ek hi hogi) return karta hai
-                const res = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/company/get", {
+                setLoading(true);
+                
+                // 1. Fetch Company details
+                const companyRes = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/company/get", {
                     withCredentials: true
                 });
-                if (res.data.success) {
-                    // Kyunki user ki ek hi company hogi, hum array ka pehla element lenge
-                    setCompany(res.data.data[0]);
+
+                // 2. Fetch Jobs created by this admin to get stats
+                const jobsRes = await axios.get("https://jobportal-1-nhtb.onrender.com/api/v1/job/getadminjobs", {
+                    withCredentials: true
+                });
+
+                if (companyRes.data.success) {
+                    setCompany(companyRes.data.data[0]);
                 }
+
+                if (jobsRes.data.success) {
+                    setAdminJobs(jobsRes.data.data);
+                }
+
             } catch (error) {
-                console.log("Error fetching company:", error);
+                console.log("Error fetching profile data:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchCompany();
+        fetchProfileData();
     }, []);
+
+    // --- Dynamic Stats Calculation ---
+    const totalJobs = adminJobs.length;
+    const totalApplicants = adminJobs.reduce((acc, job) => acc + (job.applications?.length || 0), 0);
 
     if (loading) {
         return <div className='flex items-center justify-center h-screen'><Loader2 className='animate-spin text-blue-600' /></div>
@@ -85,26 +101,26 @@ const RecruiterProfile = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                    {/* Quick Stats / Company Info */}
+                    {/* --- DYNAMIC STATS SECTION --- */}
                     <div className="bg-slate-900 rounded-3xl p-6 md:p-8 flex flex-col justify-between text-white">
                         <div>
                             <h2 className="text-xl font-bold mb-6">Recruitment Overview</h2>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-white/10 p-4 rounded-2xl border border-white/10">
                                     <Briefcase className="text-blue-400 mb-2" size={20} />
-                                    <p className="text-2xl font-black">--</p>
+                                    <p className="text-2xl font-black">{totalJobs}</p>
                                     <p className="text-[10px] uppercase font-bold text-slate-400">Active Jobs</p>
                                 </div>
                                 <div className="bg-white/10 p-4 rounded-2xl border border-white/10">
                                     <Users className="text-emerald-400 mb-2" size={20} />
-                                    <p className="text-2xl font-black">--</p>
+                                    <p className="text-2xl font-black">{totalApplicants}</p>
                                     <p className="text-[10px] uppercase font-bold text-slate-400">Total Applicants</p>
                                 </div>
                             </div>
                         </div>
 
                         <button
-                            onClick={() => navigate("/admin/jobs/create")}
+                            onClick={() => navigate("/postjob")}
                             className="w-full mt-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-900"
                         >
                             <Plus size={20} />
@@ -112,7 +128,7 @@ const RecruiterProfile = () => {
                         </button>
                     </div>
 
-                    {/* Dynamic Company Identity Section */}
+                    {/* --- COMPANY IDENTITY --- */}
                     <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
                         <div className='flex justify-between items-center mb-6'>
                             <h2 className="text-xl font-bold text-slate-900">Company Identity</h2>

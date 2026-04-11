@@ -30,14 +30,22 @@ npm run dev
 
 
 ## 📸 Screenshots
+
 ### authentication
 <img width="300" alt="Screenshot 2026-04-11 160137" src="https://github.com/user-attachments/assets/91fe576b-2c1a-465c-8604-a7265bba45f2" />
+
+
+
 ### Home Page
 <img width="300" alt="Screenshot 2026-04-11 160200" src="https://github.com/user-attachments/assets/a6706c5f-e32e-4dae-a222-7cd306d5c70d" />
+
+
+
 ### Job Section
 <img width="300" alt="Screenshot 2026-04-11 160212" src="https://github.com/user-attachments/assets/e8406ee0-f0d8-460b-9b56-350ae99fdc74" />
 <img width="300" alt="Screenshot 2026-04-11 160231" src="https://github.com/user-attachments/assets/b059ffd2-70b7-406e-bef3-325cb3c06d7b" />
 <img width="300" alt="Screenshot 2026-04-11 160250" src="https://github.com/user-attachments/assets/8cf33272-2e0e-4620-b8bf-303f42a5c3c5" />
+
 
 ### Seeker Profile
 <img width="300" alt="Screenshot 2026-04-11 160301" src="https://github.com/user-attachments/assets/10e0c6af-17ac-4b90-98e4-4ee73858ba7f" />

@@ -42,18 +42,29 @@ npm run dev
 ### Seeker Profile
 <img width="300" alt="Screenshot 2026-04-11 160301" src="https://github.com/user-attachments/assets/10e0c6af-17ac-4b90-98e4-4ee73858ba7f" />
 <img width="300" alt="Screenshot 2026-04-11 160316" src="https://github.com/user-attachments/assets/020d01ea-d774-422a-b42c-120498cb72d9" />
+
+
 ### Job Details 
 <img width="300" alt="Screenshot 2026-04-11 160337" src="https://github.com/user-attachments/assets/aab49ae5-4c96-4f5b-bb96-e0575c901cfb" />
+
+
 ### Seeker Dashboard
-<img width="300" alt="Screenshot 2026-04-11 160350" src="https://github.com/user-attachments/assets/e4e5840d-43a8-4d75-857c-06442a93deb9" />
-### Recruiter Profile
 <img width="300" alt="Screenshot 2026-04-11 160405" src="https://github.com/user-attachments/assets/3a5a3631-ee69-40ef-8ceb-d74810077f43" />
-### Post A Job
+
+
+### Recruiter Profile
 <img width="300" alt="Screenshot 2026-04-11 160622" src="https://github.com/user-attachments/assets/1fd59af6-26ae-427e-a56a-ff522787908d" />
-### Company Dashboard
+
+
+### Post A Job
 <img width="300" alt="Screenshot 2026-04-11 160643" src="https://github.com/user-attachments/assets/e5afdfd5-a203-46ea-854f-f2b0d2899079" />
-### Applications Table
+
+
+### Company Dashboard
 <img width="300" alt="Screenshot 2026-04-11 160708" src="https://github.com/user-attachments/assets/c6670978-0eba-48ee-89ce-8cd04044978b" />
+
+
+### Applications Table
 <img width="300" alt="Screenshot 2026-04-11 160724" src="https://github.com/user-attachments/assets/f6ad00a7-fc66-4e2d-b1d1-1bdb458c54a9" />
 
 

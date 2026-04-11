@@ -1,7 +1,16 @@
 # TalentLoop
 ## 📝 Description
 
-jobportal is a high-performance, full-stack recruitment platform built with Node.js and JavaScript. Designed for scalability and reliability, it features a comprehensive REST API, a secure authentication system , RBAC(Role Base authentication controller ) and a responsive web interface. The project integrates a robust database layer, automated testing suites, and a convenient CLI tool, providing a  developer-friendly environment for managing job listings and candidate interactions.
+​TalentLoop is a robust, full-stack recruitment ecosystem designed to streamline the hiring process for both recruiters and job seekers. Built with the MERN stack (MongoDB, Express, React, Node.js), it emphasizes scalability, security, and a seamless user experience.
+​The platform solves the complexity of modern hiring by providing a dual-interface system. Job Seekers can manage professional profiles, upload resumes, and track application statuses in real-time, while Recruiters can manage company branding, post job openings, and review applicants through a dedicated dashboard.
+
+
+​## Key Features
+​Role-Based Access Control (RBAC): Custom-built middleware ensures secure and distinct workflows for "Student" and "Recruiter" roles.
+​Centralized State Management: Utilizes Redux Toolkit to handle complex global states (user auth, job listings, application data) across the frontend.
+​Enterprise-Grade Backend: Built with a clean MVC (Model-View-Controller) pattern, featuring centralized error handling and asynchronous request wrappers.
+​Cloud Integration: Integrated with Cloudinary for high-speed image and document (Resume) hosting.
+​Modern UI/UX: A fully responsive interface built with Tailwind CSS and optimized for performance with Vite
 
 
 ## 🛠️ Tech Stack

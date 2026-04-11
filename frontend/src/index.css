@@ -4,7 +4,9 @@
 @import "@fontsource-variable/geist";
 
 @custom-variant dark (&:is(.dark *));
-
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;

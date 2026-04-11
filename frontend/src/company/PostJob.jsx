@@ -8,8 +8,7 @@ const PostJob = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
-  
-  // 1. Dynamic Form State (Matches your Controller/Model)
+ 
   const [input, setInput] = useState({
     title: "",
     description: "",

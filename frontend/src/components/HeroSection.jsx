@@ -1,6 +1,7 @@
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const HeroSection = () => {
+  const navigate=useNavigate();
   return (
     <section className="bg-white text-[#111827]">
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
@@ -22,18 +23,18 @@ const HeroSection = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="#"
+            <button
+              onClick={()=>(navigate("/jobs"))}
               className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Find Jobs →
-            </a>
-            <a
-              href="#"
+            </button>
+            <button
+              onClick={()=>(navigate("/postjob"))}
               className="inline-flex items-center justify-center px-8 py-3.5 border border-gray-300 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Post a Job
-            </a>
+            </button>
           </div>
         </div>
 

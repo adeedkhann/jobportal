@@ -1,6 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const FeaturesAndCTA = () => {
+  const navigate = useNavigate()
+  const {user} = useSelector(store=>store.auth)
   const features = [
     {
       title: "Vetted Companies",
@@ -92,9 +96,11 @@ const FeaturesAndCTA = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="w-full sm:w-auto bg-white text-blue-700 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
+              {user && <button 
+              onClick={()=>(navigate("/auth"))}
+              className="w-full sm:w-auto bg-white text-blue-700 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
                 Create Free Profile
-              </button>
+              </button>}
               <button className="w-full sm:w-auto bg-blue-700 border border-blue-400 text-white font-bold px-8 py-4 rounded-xl hover:bg-blue-800 transition-colors">
                 Learn More
               </button>

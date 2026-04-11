@@ -170,7 +170,79 @@ const handleLogout = async () => {
             )}
           </div>
 
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="focus:outline-none">
+                  <Avatar className="h-9 w-9 border-2 border-slate-100 hover:border-[#0052CC] transition-all duration-300 cursor-pointer shadow-sm">
+                    <AvatarImage src={user.profile?.profilePhoto} alt={user.fullname} />
+                    <AvatarFallback className="bg-blue-50 text-[#0052CC] font-bold">
+                      {user.fullname?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-2 shadow-xl border-slate-100 rounded-xl">
+                  <div className="flex items-center gap-3 p-3 mb-1 bg-slate-50/50 rounded-lg">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={user.profile?.profilePhoto} />
+                      <AvatarFallback>{user.fullname?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-semibold text-slate-900 leading-none">{user.fullname}</p>
+                      <p className="text-xs text-slate-500 mt-1 capitalize">{user.role}</p>
+                    </div>
+                  </div>
+
+                  <DropdownMenuSeparator className="bg-slate-100" />
+
+                  <div className="mt-1">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigate(user.role === 'recruiter' ? "/recruiterprofile" : "/seekerprofile");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
+                    >
+                      <User className="h-4 w-4 text-slate-500" />
+                      <span className="text-sm font-medium text-slate-700">My Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigate(user.role === 'recruiter' ? "/recruiterdashboard" : "/studentdashboard");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-slate-500" />
+                      <span className="text-sm font-medium text-slate-700">Dashboard</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      onClick={() => {
+                        navigate("/settings");
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md hover:bg-blue-50 transition-colors"
+                    >
+                      <Settings className="h-4 w-4 text-slate-500" />
+                      <span className="text-sm font-medium text-slate-700">Settings</span>
+                    </DropdownMenuItem>
+                  </div>
+
+                  <DropdownMenuSeparator className="bg-slate-100" />
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 py-2.5 px-3 cursor-pointer rounded-md text-red-600 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 transition-colors mt-1"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="text-sm font-semibold">Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-600 p-2">
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>

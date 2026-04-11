@@ -164,7 +164,7 @@ const JobDetails = () => {
                         
                         {/* Company Card (Dynamic Data from Pi) */}
                         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-                            <h3 className="font-bold text-slate-900 mb-8 uppercase text-[10px] tracking-widest text-slate-400">About Lumina Creative</h3>
+                            <h3 className="font-bold text-slate-900 mb-8 uppercase text-[10px] tracking-widest text-slate-400">About Company</h3>
                             <div className='flex items-center gap-4 mb-6'>
                                 <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 overflow-hidden shadow-inner p-2">
                                      {company?.logo ? <img src={company.logo} className='w-full h-full object-cover'/> : <Building2 size={24} className='text-blue-600'/>}

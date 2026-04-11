@@ -1,21 +1,32 @@
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 
 const ProtectedRoute = ({ children, allowedRole }) => {
+    const location = useLocation();
+    const { user, loading } = useSelector((store) => store.auth);
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        if (loading) return;
 
-    const { user ,loading} = useSelector((store) => store.auth);
+        if (!user) {
+            toast.error("authentication error", { id: "auth-error" });
+            return;
+        }
+
+        if (user.role !== allowedRole) {
+            toast.error("your role doesnt allow that action", { id: "role-error" });
+        }
+    }, [allowedRole, loading, user]);
+
     if (loading) return null;
     if (!user) {
-        toast.error("authentication error")
-        return navigate("/auth")
+        return <Navigate to="/auth" replace state={{ from: location }} />;
     }
     if (user.role !== allowedRole) {
-        toast.error("your role doesnt allow that action")
-        return navigate("/")
+        return <Navigate to="/" replace />;
     }
 
     return children;

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Loader2, AlertCircle, Send } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 const PostJob = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
+  
  
   const [input, setInput] = useState({
     title: "",

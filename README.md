@@ -5,14 +5,6 @@
 ​The platform solves the complexity of modern hiring by providing a dual-interface system. Job Seekers can manage professional profiles, upload resumes, and track application statuses in real-time, while Recruiters can manage company branding, post job openings, and review applicants through a dedicated dashboard.
 
 
-​## Key Features
-​Role-Based Access Control (RBAC): Custom-built middleware ensures secure and distinct workflows for "Student" and "Recruiter" roles.
-​Centralized State Management: Utilizes Redux Toolkit to handle complex global states (user auth, job listings, application data) across the frontend.
-​Enterprise-Grade Backend: Built with a clean MVC (Model-View-Controller) pattern, featuring centralized error handling and asynchronous request wrappers.
-​Cloud Integration: Integrated with Cloudinary for high-speed image and document (Resume) hosting.
-​Modern UI/UX: A fully responsive interface built with Tailwind CSS and optimized for performance with Vite
-
-
 ## 🛠️ Tech Stack
 
 

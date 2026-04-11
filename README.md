@@ -13,25 +13,10 @@ jobportal is a high-performance, full-stack recruitment platform built with Node
 
 
 
-## ⚡ Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/adeedkhann/jobportal.git
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-
-
 
 ## 📸 Screenshots
 
-### authentication
+### Authentication
 <img width="300" alt="Screenshot 2026-04-11 160137" src="https://github.com/user-attachments/assets/91fe576b-2c1a-465c-8604-a7265bba45f2" />
 
 
@@ -186,11 +171,28 @@ CLOUDINARY_NAME=your_cloud_name
 CLOUDINARY_KEY=your_api_key
 CLOUDINARY_SECRET=your_api_secret
 
-
 ### Node.js/JavaScript Setup
 1. Install Node.js (v18+ recommended)
 2. Install dependencies: `npm install` .
 3. Start development server: (Check scripts in `package.json`, e.g., `npm run dev`)
+
+
+## ⚡ Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/adeedkhann/jobportal.git
+
+# Run Backend
+cd backend
+npm install
+npm run dev
+
+# Run Frontend
+cd frontend
+npm install
+npm run dev 
+```
 
 
 ## 👥 Contributing

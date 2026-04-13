@@ -18,9 +18,9 @@ const CompanyCreate = () => {
 
             if (res.data.success) {
                 toast.success(res.data.message);
-                // const companyId = res.data.data?._id;
+                const companyId = res.data.data?._id;
                 // Registration ke baad seedha Setup (Details) page par bhej rahe hain
-                navigate(`/updatecompany`);
+                navigate(`/updatecompany/${companyId}`);
             }
         } catch (error) {
             console.log(error);

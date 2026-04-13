@@ -96,7 +96,7 @@ const FeaturesAndCTA = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {user && <button 
+              {!user && <button 
               onClick={()=>(navigate("/auth"))}
               className="w-full sm:w-auto bg-white text-blue-700 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg">
                 Create Free Profile

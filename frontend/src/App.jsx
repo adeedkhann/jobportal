@@ -20,6 +20,7 @@ import CompanySetup from "./company/CompanySetup";
 import CompanyCreate from "./company/CompanyCreate";
 import JobDetails from "./pages/JobDetails";
 import Applicants from "./pages/Applicants";
+import HeroSkeleton from "./skeletons/HeroSkeleton";
 
 
 const appRouter = createBrowserRouter([
@@ -138,9 +139,10 @@ function App() {
 
   if (isRefreshing) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
+      <div className="min-h-screen bg-white">
+      {/* We keep the height consistent so the page doesn't "jump" when the real content loads */}
+      <HeroSkeleton/>
+    </div>
     );
   }
 
